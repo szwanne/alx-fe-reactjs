@@ -1,20 +1,18 @@
-import "./App.css";
-import WelcomeMessage from "./components/WelcomeMessage";
-import Header from "./components/Header";
-import MainContent from "./components/MainContent";
-import Footer from "./components/Footer";
-import ProfilePage from "./components/ProfilePage";
-import { userContext } from "./UserContext";
-
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import ProfilePage from "./ProfilePage";
+import { UserContext } from "./UserContext";
 function App() {
-  const userData = { name: "Jane Doe", email: "janedoe123@example.com" };
-
+  const userData = {
+    name: "Jane Doe",
+    email: "jane.doe@example.com",
+  };
   return (
-    <>
-      <userContext.Provider value={userData}>
+    <UserContext.Provider value={userData}>
+      <Router>
         <ProfilePage />
-      </userContext.Provider>
-    </>
+      </Router>
+    </UserContext.Provider>
   );
 }
 
