@@ -1,3 +1,3 @@
-import React, { useContext } from "react";
+import { createContext } from 'react';
 
-export const userContext = React.createContext();
+export const UserContext = createContext();
