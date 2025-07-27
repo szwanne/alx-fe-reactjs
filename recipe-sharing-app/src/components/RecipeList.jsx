@@ -1,12 +1,15 @@
 // src/components/RecipeList.jsx
-import { useRecipeStore } from "../recipeStore";
+import React from "react";
+import { useRecipeStore } from "./recipeStore";
 
 const RecipeList = () => {
-  const recipes = useRecipeStore((state) => state.recipes);
+  const { filteredRecipes, recipes, searchTerm } = useRecipeStore();
+
+  const recipesToDisplay = searchTerm ? filteredRecipes : recipes;
 
   return (
     <div>
-      {recipes.map((recipe) => (
+      {recipesToDisplay.map((recipe) => (
         <div key={recipe.id}>
           <h3>{recipe.title}</h3>
           <p>{recipe.description}</p>
