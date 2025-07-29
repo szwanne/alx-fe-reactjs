@@ -1,17 +1,15 @@
-// src/services/github.js
+// src/services/githubService.js
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_GITHUB_BASE_URL;
-const TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
+const BASE_URL =
+  import.meta.env.VITE_GITHUB_BASE_URL || "https://api.github.com";
 
-export const fetchGitHubUser = async (username) => {
+export const fetchUserData = async (username) => {
   try {
-    const response = await axios.get(`${BASE_URL}/users/${username}`, {
-      headers: TOKEN ? { Authorization: `token ${TOKEN}` } : {},
-    });
+    const response = await axios.get(`${BASE_URL}/users/${username}`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching GitHub user:", error);
+    console.error("API Error:", error);
     return null;
   }
 };
