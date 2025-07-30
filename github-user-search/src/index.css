@@ -30,11 +30,13 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  justify-content: center;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  font-weight: 600;
 }
 
 button {
@@ -47,7 +49,13 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  margin: 10px 50px;
 }
+
+input {
+  width: 250px;
+}
+
 button:hover {
   border-color: #646cff;
 }
