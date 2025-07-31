@@ -1,30 +1,49 @@
 // src/components/Search.jsx
 import React, { useState } from "react";
-import { searchUsers } from "../services/githubService";
+import {
+  fetchUserData,
+  fetchUserRepos,
+  searchUsers,
+} from "../services/githubService";
 
 function Search() {
-  const [query, setQuery] = useState("");
+  const [username, setUsername] = useState("");
   const [location, setLocation] = useState("");
-  const [minRepos, setMinRepos] = useState(0);
-  const [results, setResults] = useState([]);
+  const [minRepos, setMinRepos] = useState("");
+  const [userData, setUserData] = useState(null);
+  const [repos, setRepos] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    setResults([]);
-    setError("");
     setLoading(true);
+    setError("");
+    setUserData(null);
+    setRepos([]);
+    setSearchResults([]);
 
     try {
-      const users = await searchUsers({ query, location, minRepos });
-      if (users.length === 0) {
-        setError("No users found.");
+      if (username) {
+        const user = await fetchUserData(username);
+        const userRepos = await fetchUserRepos(username);
+        if (user) {
+          setUserData(user);
+          setRepos(userRepos);
+        } else {
+          setError("User not found.");
+        }
       } else {
-        setResults(users);
+        const results = await searchUsers({
+          query: "type:user",
+          location,
+          minRepos,
+        });
+        setSearchResults(results);
       }
     } catch (err) {
-      setError("Error searching for users.");
+      setError("An error occurred during search.");
     } finally {
       setLoading(false);
     }
@@ -32,72 +51,94 @@ function Search() {
 
   return (
     <div className="search-container p-4 max-w-xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSearch} className="space-y-3">
         <input
           type="text"
-          placeholder="Search GitHub username..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full px-4 py-2 border rounded"
-          required
+          placeholder="GitHub username (optional)"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
         />
-
-        {/* ✅ Location input */}
         <input
           type="text"
-          placeholder="Filter by location (e.g. South Africa)"
+          placeholder="Location (e.g., South Africa)"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="w-full px-4 py-2 border rounded"
+          className="w-full p-2 border border-gray-300 rounded"
         />
-
-        {/* Optional: Minimum Repos input */}
         <input
           type="number"
-          placeholder="Minimum number of public repos"
+          placeholder="Minimum Repositories (e.g., 5)"
           value={minRepos}
           onChange={(e) => setMinRepos(e.target.value)}
-          className="w-full px-4 py-2 border rounded"
-          min={0}
+          className="w-full p-2 border border-gray-300 rounded"
         />
-
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Search
         </button>
       </form>
 
-      <div className="result-container mt-6">
+      <div className="result-container mt-6 space-y-4">
         {loading && <p>Loading...</p>}
-        {error && <p className="text-red-600">{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
-        {results.length > 0 && (
-          <div className="grid gap-4 mt-4">
-            {results.map((user) => (
-              <div
-                key={user.id}
-                className="border rounded p-4 flex items-center space-x-4"
-              >
-                <img
-                  src={user.avatar_url}
-                  alt={`${user.login} avatar`}
-                  className="w-16 h-16 rounded-full"
-                />
-                <div>
-                  <h2 className="text-lg font-semibold">{user.login}</h2>
+        {userData && (
+          <div className="user-card p-4 border rounded shadow">
+            <img
+              src={userData.avatar_url}
+              alt="Avatar"
+              className="w-24 h-24 rounded-full"
+            />
+            <h2 className="text-xl font-bold mt-2">
+              {userData.name || userData.login}
+            </h2>
+            <p>{userData.location}</p>
+            <a
+              href={userData.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              View GitHub Profile
+            </a>
+            <h3 className="mt-4 font-semibold">Repositories:</h3>
+            <ul className="list-disc ml-5">
+              {repos.slice(0, 5).map((repo) => (
+                <li key={repo.id}>
+                  <a
+                    href={repo.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500"
+                  >
+                    {repo.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {searchResults.length > 0 && (
+          <div className="results-list">
+            <h3 className="font-semibold">Search Results:</h3>
+            <ul className="space-y-2">
+              {searchResults.map((user) => (
+                <li key={user.id} className="p-2 border rounded">
                   <a
                     href={user.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 underline"
+                    className="text-blue-600"
                   >
-                    View Profile
+                    {user.login}
                   </a>
-                </div>
-              </div>
-            ))}
+                </li>
+              ))}
+            </ul>
           </div>
         )}
       </div>
