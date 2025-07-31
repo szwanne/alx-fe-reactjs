@@ -4,7 +4,7 @@ import { searchUsers } from "../services/githubService";
 
 function Search() {
   const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(""); //
   const [minRepos, setMinRepos] = useState(0);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
