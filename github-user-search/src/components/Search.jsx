@@ -19,12 +19,12 @@ function Search() {
     try {
       const users = await searchUsers({ query, location, minRepos });
       if (users.length === 0) {
-        setError("No users found.");
+        setError("Looks like we cant find the user");
       } else {
         setResults(users);
       }
     } catch (err) {
-      setError("Error searching for users.");
+      setError("Looks like we cant find the user");
     } finally {
       setLoading(false);
     }
