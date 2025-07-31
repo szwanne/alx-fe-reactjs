@@ -4,7 +4,28 @@ import axios from "axios";
 const BASE_URL =
   import.meta.env.VITE_GITHUB_BASE_URL || "https://api.github.com";
 
-// Fetch user profile data
+// ✅ Search users with optional location and minimum repos
+export const searchUsers = async ({ query, location = "", minRepos = 0 }) => {
+  try {
+    let q = query;
+
+    if (location) {
+      q += `+location:${location}`;
+    }
+
+    if (minRepos) {
+      q += `+repos:>${minRepos}`;
+    }
+
+    const response = await axios.get(`${BASE_URL}/search/users?q=${q}`);
+    return response.data.items; // list of user objects
+  } catch (error) {
+    console.error("API Error (search users):", error);
+    return [];
+  }
+};
+
+// Still keep this if needed
 export const fetchUserData = async (username) => {
   try {
     const response = await axios.get(`${BASE_URL}/users/${username}`);
@@ -15,7 +36,6 @@ export const fetchUserData = async (username) => {
   }
 };
 
-// ✅ Fetch user repositories using Axios
 export const fetchUserRepos = async (username) => {
   try {
     const response = await axios.get(`${BASE_URL}/users/${username}/repos`);
