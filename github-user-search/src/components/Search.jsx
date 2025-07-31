@@ -1,77 +1,103 @@
+// src/components/Search.jsx
 import React, { useState } from "react";
-import { fetchUserData, fetchUserRepos } from "../services/githubService";
+import { searchUsers } from "../services/githubService";
 
 function Search() {
-  const [input, setInput] = useState("");
-  const [userData, setUserData] = useState(null);
-  const [repos, setRepos] = useState([]);
+  const [query, setQuery] = useState("");
+  const [location, setLocation] = useState("");
+  const [minRepos, setMinRepos] = useState(0);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setUserData(null);
-    setRepos([]);
+    setResults([]);
     setError("");
     setLoading(true);
 
     try {
-      const data = await fetchUserData(input);
-      const repoData = await fetchUserRepos(input);
-      setUserData(data);
-      setRepos(repoData);
+      const users = await searchUsers({ query, location, minRepos });
+      if (users.length === 0) {
+        setError("No users found.");
+      } else {
+        setResults(users);
+      }
     } catch (err) {
-      setError("Looks like we can't find the user or their repos");
+      setError("Error searching for users.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="search-container">
-      <form onSubmit={handleSubmit}>
+    <div className="search-container p-4 max-w-xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           placeholder="Search GitHub username..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="w-full px-4 py-2 border rounded"
+          required
         />
-        <button type="submit">Search</button>
+
+        {/* ✅ Location input */}
+        <input
+          type="text"
+          placeholder="Filter by location (e.g. South Africa)"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="w-full px-4 py-2 border rounded"
+        />
+
+        {/* Optional: Minimum Repos input */}
+        <input
+          type="number"
+          placeholder="Minimum number of public repos"
+          value={minRepos}
+          onChange={(e) => setMinRepos(e.target.value)}
+          className="w-full px-4 py-2 border rounded"
+          min={0}
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Search
+        </button>
       </form>
 
-      <div className="result-container">
+      <div className="result-container mt-6">
         {loading && <p>Loading...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {userData && (
-          <div className="user-card">
-            <img src={userData.avatar_url} alt="User avatar" width={100} />
-            <h2>{userData.name || userData.login}</h2>
-            <a
-              href={userData.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Visit Profile
-            </a>
-          </div>
-        )}
+        {error && <p className="text-red-600">{error}</p>}
 
-        {repos.length > 0 && (
-          <div className="repo-list">
-            <h3>Public Repositories:</h3>
-            <ul>
-              {repos.map((repo) => (
-                <li key={repo.id}>
+        {results.length > 0 && (
+          <div className="grid gap-4 mt-4">
+            {results.map((user) => (
+              <div
+                key={user.id}
+                className="border rounded p-4 flex items-center space-x-4"
+              >
+                <img
+                  src={user.avatar_url}
+                  alt={`${user.login} avatar`}
+                  className="w-16 h-16 rounded-full"
+                />
+                <div>
+                  <h2 className="text-lg font-semibold">{user.login}</h2>
                   <a
-                    href={repo.html_url}
+                    href={user.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="text-blue-500 underline"
                   >
-                    {repo.name}
+                    View Profile
                   </a>
-                </li>
-              ))}
-            </ul>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
