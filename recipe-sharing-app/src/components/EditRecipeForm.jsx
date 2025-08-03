@@ -1,42 +1,90 @@
-// src/components/EditRecipeForm.jsx
-import React, { useState } from "react";
+import "../App.css";
 import { useRecipeStore } from "./recipeStore";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import DeleteRecipeButton from "./DeleteRecipeButton";
 
-const EditRecipeForm = ({ recipeId }) => {
+export default function EditRecipeForm() {
+  const { id } = useParams();
+  const recipeId = Number(id);
   const recipe = useRecipeStore((state) =>
-    state.recipes.find((recipe) => recipe.id === recipeId)
+    state.recipes.find((r) => r.id === recipeId)
   );
 
-  const updateRecipe = useRecipeStore((state) => state.updateRecipe);
+  const navigate = useNavigate();
 
-  const [title, setTitle] = useState(recipe.title);
-  const [description, setDescription] = useState(recipe.description);
-
-  const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent the website from reloading
-    updateRecipe(recipeId, { title, description });
-    alert("Recipe updated successfully!");
+  const titleInput = {
+    width: "650px",
+    height: "56px",
+    fontSize: "1.5rem",
+  };
+  const DescInput = {
+    width: "650px",
+    height: "400px",
+    fontSize: "1.5rem",
+  };
+  const saveBtn = {
+    backgroundColor: "hsl(157, 88%, 29%)",
   };
 
+  const updateRecipe = useRecipeStore((state) => state.updateRecipe);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+  });
+
+  useEffect(() => {
+    /* Populate the field with the existing recipe if it exists */
+    if (recipe) {
+      setFormData({ title: recipe.title, description: recipe.description });
+    }
+  }, [recipe]);
+
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    updateRecipe(recipeId, formData);
+    alert("Saved!");
+    navigate("/list");
+  };
+
+  const { title, description } = formData;
+
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Edit Recipe</h2>
-      <label>Title:</label>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      <label>Description:</label>
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      <button type="submit">Save Changes</button>
-    </form>
+    <div>
+      <form onSubmit={handleSubmit} key={recipeId}>
+        <input
+          style={titleInput}
+          type="text"
+          name="title"
+          value={title}
+          onChange={handleChange}
+        />
+        <br />
+        <br />
+        <input
+          style={DescInput}
+          type="text"
+          name="description"
+          value={description}
+          onChange={handleChange}
+        />
+        <br />
+        <br />
+        <button style={saveBtn} type="submit">
+          Save
+        </button>
+        <br />
+        <br />
+      </form>
+      <DeleteRecipeButton recipeId={recipeId} />
+      &nbsp;&nbsp;
+      <button onClick={() => navigate("/list")}>Cancel</button>
+    </div>
   );
-};
-
-export default EditRecipeForm;
+}
