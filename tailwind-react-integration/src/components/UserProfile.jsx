@@ -9,7 +9,7 @@ function UserProfile() {
       <h1 className="md:text-xl sm:text-lg text-blue-800 my-4 hover:text-blue-500">
         John Doe
       </h1>
-      <p className="text-gray-600 text-base">
+      <p className="text-gray-600 md:text-base sm:text-sm">
         Developer at Example Co. Loves to write code and explore new
         technologies.
       </p>
