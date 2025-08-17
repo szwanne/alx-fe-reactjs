@@ -15,6 +15,14 @@ function HomePage() {
       <h1 className="my-8 font-bold text-center text-2xl">
         Recipe Sharing Platform
       </h1>
+      <div className="text-center mb-6">
+        <Link
+          to="/add-recipe"
+          className="bg-green-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          + Add New Recipe
+        </Link>
+      </div>
       {recipes.length === 0 ? (
         <p>Loading...</p>
       ) : (
