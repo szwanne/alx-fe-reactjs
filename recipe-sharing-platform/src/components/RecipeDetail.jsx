@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import data from "../data.json";
 
 function RecipeDetail() {
   const { id } = useParams();
-  const recipe = data.find((item) => item.id === parseInt(id));
+  const [recipe, setRecipe] = useState(null);
+
+  useEffect(() => {
+    const foundRecipe = data.find((item) => item.id === parseInt(id));
+    setRecipe(foundRecipe);
+  }, [id]);
 
   if (!recipe) {
     return <p className="text-center mt-10">Recipe not found.</p>;
@@ -24,10 +29,8 @@ function RecipeDetail() {
         className="w-full h-96 object-cover rounded-lg shadow-md mb-8"
       />
 
-      {/* Summary */}
       <p className="text-gray-700 mb-6 text-lg">{recipe.summary}</p>
 
-      {/* Ingredients */}
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
@@ -37,7 +40,6 @@ function RecipeDetail() {
         </ul>
       </div>
 
-      {/* Instructions */}
       <div>
         <h2 className="text-2xl font-semibold mb-4">Instructions</h2>
         <ol className="list-decimal list-inside space-y-3 text-gray-700">
