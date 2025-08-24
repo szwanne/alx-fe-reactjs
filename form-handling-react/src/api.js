@@ -1,4 +1,3 @@
-// src/api.js
 export async function registerUser({ username, email, password }) {
   const response = await fetch("https://reqres.in/api/users", {
     method: "POST",
