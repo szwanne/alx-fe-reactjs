@@ -39,7 +39,7 @@ export default function App() {
           </Route>
 
           {/* Dynamic route */}
-          <Route path="/blog/:postId" element={<BlogPost />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
 
           {/* Login route */}
           <Route path="/login" element={<Login />} />
