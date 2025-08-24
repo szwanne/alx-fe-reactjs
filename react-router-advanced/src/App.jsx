@@ -5,6 +5,7 @@ import ProfileSettings from "./pages/ProfileSettings.jsx";
 import BlogPost from "./pages/BlogPost.jsx";
 import Login from "./pages/Login.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Profile from "./components/Profile.jsx";
 import Home from "./pages/Home.jsx";
 import ProfileDetails from "./pages/ProfileDetails.jsx";
 
